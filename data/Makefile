@@ -14,5 +14,6 @@ push: login
 	@# docker login is not here
 	@docker push $(image)
 
-# deploy:
-# 	@cat deployment.yaml | sed "s/IMAGEVERSION/$(version)/g;s/ACCOUNT/$(account)/g;s/NAMESPACE/$(namespace)/g" | kubectl apply -f -
+deploy:
+	@cat data-secret.yaml | sed "s/NAMESPACE/$(namespace)/g" | kubectl apply -f - 
+	@cat data-deployment.yaml | sed "s/IMAGEVERSION/$(version)/g;s/ACCOUNT/$(account)/g;s/NAMESPACE/$(namespace)/g" | kubectl apply -f -
