@@ -32,16 +32,19 @@ then
     make push stage=$stagevar
 fi
 
-# deploy image regardless of stage
-# cd back/
-# make deploy stage=$stagevar
-# cd ..
-# cd data/
-# make deploy stage=$stagevar
-# cd .. 
-# cd data-script/
-# make deploy stage=$stagevar
-# cd ..
-# cd front/
-# make deploy stage=$stagevar
-# cd .. 
+#deploy image regardless of stage
+cd pv/
+make run 
+cd .. 
+cd back/
+make deploy stage=$stagevar
+cd ..
+cd data/
+make deploy stage=$stagevar
+cd .. 
+cd data-script/
+make deploy stage=$stagevar
+cd ..
+cd front/
+make deploy stage=$stagevar
+cd .. 
