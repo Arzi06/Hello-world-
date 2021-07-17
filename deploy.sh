@@ -30,6 +30,7 @@ then
     cd front/
     make build stage=$stagevar
     make push stage=$stagevar
+    cd ..
 fi
 
 #deploy image regardless of stage
