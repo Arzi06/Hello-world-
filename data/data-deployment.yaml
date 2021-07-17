@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.20.0 (f3d54d784)
+  labels:
+    io.kompose.service: data
+  name: data
+  namespace: NAMESPACE
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    io.kompose.service: data
+status:
+  loadBalancer: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.20.0 (f3d54d784)
+  labels:
+    io.kompose.service: data
+  name: data
+  namespace: NAMESPACE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: data
+      io.kompose.network/myapp: "true"
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.20.0 (f3d54d784)
+      labels:
+        io.kompose.network/myapp: "true"
+        io.kompose.service: data
+    spec:
+      volumes:
+      - name: pv-storage
+        persistentVolumeClaim:
+          claimName: data-pvc
+      containers:
+      - image: ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/data:IMAGEVERSION
+        name: db
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: pv-storage
+        envFrom:
+        - secretRef:
+            name: data-secret
+        ports:
+        - containerPort: 3306
+        resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.20.0 (f3d54d784)
+  labels:
+    io.kompose.service: back
+  name: api
+  namespace: NAMESPACE
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    io.kompose.service: back
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.20.0 (f3d54d784)
+  labels:
+    io.kompose.service: back
+  name: back
+  namespace: NAMESPACE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.network/myapp: "true"
+      io.kompose.service: back
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.20.0 (f3d54d784)
+      labels:
+        io.kompose.network/myapp: "true"
+        io.kompose.service: back
+    spec:
+      containers:
+      - image: ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/back:IMAGEVERSION
+        name: api
+        envFrom:
+        - secretRef:
+            name: back-secret
+        ports:
+        - containerPort: 3000
+        resources: {}
+      restartPolicy: Always
+status: {}
